@@ -1,4 +1,6 @@
 <?php
+//https://stackoverflow.com/questions/44711642/lumen-5-4-log-info-level-to-separate-file
+
 // /bootstrap/app.php
 /** @var \Laravel\Lumen\Routing\Router $router */
 
@@ -13,43 +15,11 @@
 |
 */
 
-$logStr =<<<LOG
-[{{ method }}]|{{ url }}|{{ requestJson }}|{{ headers }}||
-LOG;
-
-
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-//https://stackoverflow.com/questions/44711642/lumen-5-4-log-info-level-to-separate-file
-$router->get('/hook/{channelId:\d{10}}', function ($channelId, \Illuminate\Http\Request $request) use ($logStr) {
-    /** @var \Illuminate\Log\Logger $logger */
-    $logger = app()->make(\Illuminate\Log\Logger::class);
-    $info = str_replace(['{{ method }}', '{{ url }}', '{{ requestJson }}', '{{ headers }}'],
-        ['GET', $request->fullUrl(), json_encode($request->toArray()), json_encode($request->headers)],
-        $logStr
-    );
 
-    $logger->info($info);
+$router->get('/hook/{channelId:\d{10}}', 'LineController@verify');
+$router->post('/hook/{channelId:\d{10}}', 'LineController@hook');
 
-    return response()->json([
-        'success' => 'ok'
-    ]);
-});
-
-
-$router->post('/hook/{channelId:\d{10}}', function ($channelId, \Illuminate\Http\Request $request) use ($logStr) {
-    /** @var \Illuminate\Log\Logger $logger */
-    $logger = app()->make(\Illuminate\Log\Logger::class);
-    $info = str_replace(['{{ method }}', '{{ url }}', '{{ requestJson }}', '{{ headers }}'],
-        ['POST', $request->fullUrl(), json_encode($request->toArray()), json_encode($request->headers)],
-        $logStr
-    );
-
-    $logger->info($info);
-
-    return response()->json([
-        'success' => 'ok'
-    ]);
-});

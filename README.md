@@ -1,18 +1,12 @@
 # Lumen GW
-codeStyle must be camelCase (駝峰式命名)
+code style must be camelCase (駝峰式命名)
 1. Setting `.env`
-2. run initial line get access-token
+2. 跑初始話程序來取得 *accessToken*，共有兩個 一個為 login channel 另外一個是 message channel
 ```shell
-   php artisan line:initial
+   php artisan line:initial {channelId} {channelSecret}
 ```
-3. 
-<pre>
-LINE_CHANNEL_SECRET_{channelId}
-LINE_TOKEN_{channelId}
-</pre>>
 
-
-## REDIS 命名 全大寫並且單字用 _ 分隔
+### REDIS 命名 全大寫並且單字用 _ 分隔
 
 # Lumen PHP Framework
 

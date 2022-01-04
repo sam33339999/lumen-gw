@@ -7,8 +7,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Redis;
-use Symfony\Component\Console\Input\InputOption;
-use function PHPUnit\Framework\isNull;
 
 class LineGetAccessToken extends Command
 {
@@ -41,7 +39,6 @@ class LineGetAccessToken extends Command
 
             /*** @var Client $cli */
             $cli = app()->make(Client::class);
-
             $result = $cli->post("https://api.line.me/v2/oauth/accessToken", [
                 'headers' => [
                     "Content-Type" => "application/x-www-form-urlencoded"
@@ -55,8 +52,6 @@ class LineGetAccessToken extends Command
 
             $result = json_decode($result, true);
             $accessToken = $result['access_token'];
-            // $expiresIn = $result['expires_in'];
-            // $tokenType = $result['token_type'];
 
             /** @var $redis \Predis\Client */
             $redis = Redis::connection();
