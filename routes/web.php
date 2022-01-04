@@ -16,3 +16,13 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->get('/hook/{channelId}', function (\Illuminate\Http\Request $request) {
+    \Illuminate\Support\Facades\Log::log('error', json_encode($request->all()));
+    return true;
+});
+
+$router->post('/hook/{channelId}', function (\Illuminate\Http\Request $request) {
+    \Illuminate\Support\Facades\Log::log('error', json_encode($request->all()));
+    return true;
+});

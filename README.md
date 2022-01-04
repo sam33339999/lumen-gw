@@ -6,6 +6,13 @@ codeStyle must be camelCase (駝峰式命名)
    php artisan line:initial
 ```
 3. 
+<pre>
+LINE_CHANNEL_SECRET_{channelId}
+LINE_TOKEN_{channelId}
+</pre>>
+
+
+## REDIS 命名 全大寫並且單字用 _ 分隔
 
 # Lumen PHP Framework
 
