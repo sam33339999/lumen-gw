@@ -12,6 +12,13 @@ use Illuminate\Support\Facades\Redis;
 
 class LinePushMessage extends Command
 {
+    /** @var $redis \Predis\Client */
+    protected $redis;
+
+    public function __construct() {
+        parent::__construct();
+        $this->redis = Redis::connection();
+    }
     /**
      * The signature of the command.
      *
@@ -33,11 +40,12 @@ class LinePushMessage extends Command
      */
     public function handle(): int
     {
-        try {
-
-            return 0;
-        } catch (\Exception | GuzzleException  $exception) {
-            $this->error("Failed to initial line access_token ! because: " . $exception->getMessage());
+        while (true) {
+            try {
+                dd($this->redis->get('accessToken-1656178826'));
+            } catch (\Exception | GuzzleException  $exception) {
+                $this->error("Failed to initial line access_token ! because: " . $exception->getMessage());
+            }
         }
     }
 

@@ -20,6 +20,7 @@ $router->get('/', function () use ($router) {
 });
 
 
-$router->get('/hook/{channelId:\d{10}}', 'LineController@verify');
+//$router->get('/hook/{channelId:\d{10}}', 'LineController@verify');
+$router->get('/hook/{channelId:\d{10}}', 'LineController@hook');
 $router->post('/hook/{channelId:\d{10}}', 'LineController@hook');
 
