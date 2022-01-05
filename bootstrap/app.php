@@ -91,6 +91,7 @@ $app->configure('database');
 |
 */
 
+$app->register(Hhxsv5\LaravelS\Illuminate\LaravelSServiceProvider::class);
 // $app->register(App\Providers\AppServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
