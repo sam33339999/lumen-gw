@@ -7,7 +7,9 @@ use Predis\Client;
 
 class LineServices
 {
-    const FOLLOW_UNFOLLOW_EVENT = 'FOLLOW_UNFOLLOW_{{ channelId }}';
+    const FOLLOW_STATUS_QUEUE = 'FOLLOW_STATUS_{{ channelId }}';
+    const FOLLOW_FOLLOW_EVENT = 'FOLLOW_{{ channelId }}';
+    const UNFOLLOW_UNFOLLOW_EVENT = 'UNFOLLOW_{{ channelId }}';
     const MESSAGE_EVENT = 'MESSAGE_{{ channelId }}';
     const JOIN_EVENT = 'JOIN_{{ channelId }}';
     const LEAVE_EVENT = 'LEAVE_EVENT_{{ channelId }}';
@@ -36,9 +38,11 @@ class LineServices
      */
     public function handleUnfollow(string $channelId, int $timestamp, array $source, string $mode)
     {
-        $content = 'UNFOLLOW ' . $source['userId'];
-        $queueName = str_replace('{{ channelId }}', $channelId, self::FOLLOW_UNFOLLOW_EVENT);
-        $this->redis->rpush($queueName, [$content]);
+        $content = $source['userId'];
+        $queueUnfollow = str_replace('{{ channelId }}', $channelId, self::UNFOLLOW_UNFOLLOW_EVENT);
+        $queueStatus = str_replace('{{ channelId }}', $channelId, self::FOLLOW_STATUS_QUEUE);
+        $this->redis->rpush($queueUnfollow, [$content]);
+        $this->redis->rpush($queueStatus, ["unfollow-$timestamp-$content"]);
     }
 
     /** 解除封鎖
@@ -58,9 +62,11 @@ class LineServices
      */
     public function handleFollow(string $channelId, int $timestamp, array $source, string $mode, string $replyToken)
     {
-        $content = 'FOLLOW ' . $source['userId'];
-        $queueName = str_replace('{{ channelId }}', $channelId, self::FOLLOW_UNFOLLOW_EVENT);
-        $this->redis->rpush($queueName, [$content]);
+        $content = $source['userId'];
+        $queueFollow = str_replace('{{ channelId }}', $channelId, self::FOLLOW_FOLLOW_EVENT);
+        $queueStatus = str_replace('{{ channelId }}', $channelId, self::FOLLOW_STATUS_QUEUE);
+        $this->redis->rpush($queueFollow, [$content]);
+        $this->redis->rpush($queueStatus, ["follow-$timestamp-$content"]);
     }
 
     /** 機器人收到訊息

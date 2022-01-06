@@ -6,7 +6,10 @@ code style must be camelCase (駝峰式命名)
    php artisan line:initial {channelId} {channelSecret}
 ```
 
-### REDIS 命名 全大寫並且單字用 _ 分隔
+### REDIS 命名 全大寫並且單字用 _ 分隔 後綴 channelId
+
+
+2022-01-07 將 follow unfollow 拆分出來，並且多了一個 queue 去 handle follow的狀態追蹤。 拆分原因： 在主專案中可以比較針對 follow 事件馬上反應，不會因為消化問題導致來不及取代 profile
 
 # Lumen PHP Framework
 
