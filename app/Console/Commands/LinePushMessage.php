@@ -15,9 +15,13 @@ class LinePushMessage extends Command
     /** @var $redis \Predis\Client */
     protected $redis;
 
-    public function __construct() {
+    /** @var Client $client */
+    protected $client;
+
+    public function __construct(Client $client) {
         parent::__construct();
         $this->redis = Redis::connection();
+        $this->client = $client;
     }
     /**
      * The signature of the command.
@@ -42,7 +46,18 @@ class LinePushMessage extends Command
     {
         while (true) {
             try {
-                dd($this->redis->get('accessToken-1656178826'));
+                $channelId = env('MESSAGE_CHANNEL_ID');
+                $token = $this->redis->get("LINE_TOKEN_$channelId");
+
+                $contentJson = $this->redis->blpop("PUSH_LIST_$channelId", 600);
+
+                (clone $this->client)->post('https://api.line.me/v2/bot/message/multicast', [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'Authorization' => "Bearer $token",
+                    ],
+                    'body' => $contentJson,
+                ]);
             } catch (\Exception | GuzzleException  $exception) {
                 $this->error("Failed to initial line access_token ! because: " . $exception->getMessage());
             }
@@ -58,5 +73,10 @@ class LinePushMessage extends Command
     public function schedule(Schedule $schedule): void
     {
         // $schedule->command(static::class)->everyMinute();
+    }
+
+    protected function verifyFormat(string $pushJson): bool
+    {
+        if (! $pushJson) return false;
     }
 }

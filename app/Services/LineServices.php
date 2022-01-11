@@ -65,8 +65,8 @@ class LineServices
         $content = $source['userId'];
         $queueFollow = str_replace('{{ channelId }}', $channelId, self::FOLLOW_FOLLOW_EVENT);
         $queueStatus = str_replace('{{ channelId }}', $channelId, self::FOLLOW_STATUS_QUEUE);
-        $this->redis->rpush($queueFollow, [$content]);
-        $this->redis->rpush($queueStatus, ["follow-$timestamp-$content"]);
+        $this->redis->lpush($queueFollow, [$content]);
+        $this->redis->lpush($queueStatus, ["follow-$timestamp-$content"]);
     }
 
     /** 機器人收到訊息
