@@ -6,6 +6,16 @@ code style must be camelCase (駝峰式命名)
    php artisan line:initial {channelId} {channelSecret}
 ```
 
+
+- (守護進程)QUEUE(PUSH_LIST_{channelId}) 主動推訊息 (https://developers.line.biz/en/docs/messaging-api/sending-messages/#methods-of-sending-message)
+```shell
+php artisan line:push-message
+- ```
+測試上方的QUEUE 在Q 新增資訊
+```shell
+127.0.0.1:6379> lpush PUSH_LIST_1644812070 '{"to": ["Ua2c49d314904342d2999845fb1809a03"], "messages": [{"type": "text", "text": "Helloworld!" }]}'
+```
+
 ### REDIS 命名 全大寫並且單字用 _ 分隔 後綴 channelId
 
 

@@ -2,10 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\JsonParseException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 // https://www.oxxostudio.tw/articles/201806/line-push-message.html
@@ -50,6 +52,10 @@ class LinePushMessage extends Command
                 $token = $this->redis->get("LINE_TOKEN_$channelId");
 
                 $contentJson = $this->redis->blpop("PUSH_LIST_$channelId", 600);
+                $contentJson = $contentJson[1];
+                if (! $this->verifyFormat($contentJson)) {
+                    throw new \Exception('content error: ' . $contentJson);
+                }
 
                 (clone $this->client)->post('https://api.line.me/v2/bot/message/multicast', [
                     'headers' => [
@@ -59,7 +65,7 @@ class LinePushMessage extends Command
                     'body' => $contentJson,
                 ]);
             } catch (\Exception | GuzzleException  $exception) {
-                $this->error("Failed to initial line access_token ! because: " . $exception->getMessage());
+                Log::error($exception->getMessage());
             }
         }
     }
@@ -75,8 +81,23 @@ class LinePushMessage extends Command
         // $schedule->command(static::class)->everyMinute();
     }
 
-    protected function verifyFormat(string $pushJson): bool
+    protected function verifyFormat($pushJson): bool
     {
         if (! $pushJson) return false;
+
+        $data = json_decode($pushJson, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return false;
+        }
+
+        if (count($data['to'] ?? []) === 0) {
+            return false;
+        }
+
+        if (count($data['messages'] ?? []) === 0) {
+            return false;
+        }
+        return true;
     }
 }
